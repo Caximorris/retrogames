@@ -1,6 +1,6 @@
 import {useState, useEffect, useRef, useMemo, useCallback} from 'react';
 
-const usePaddle = (boardSize, upKey, downKey) => {
+const usePaddle = (boardSize, upKey, downKey, playerOne) => {
     const size = useMemo(() => ({
         height: Math.round(boardSize.height * 0.2),
         width: Math.round(boardSize.width * 0.02)
@@ -72,7 +72,15 @@ const usePaddle = (boardSize, upKey, downKey) => {
         }
     }, [boardSize, position]);
 
-    return { position, size };
+    const leftPosition = Math.round(boardSize.width * 0.05);
+    const rightPosition = boardSize.width - size.width - leftPosition;
+
+    return {
+        position: {
+            x: playerOne ? leftPosition : rightPosition,
+            y: position,
+        }, size
+    };
 };
 
 export default usePaddle;
