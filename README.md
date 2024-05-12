@@ -1,4 +1,4 @@
-# React RetroGames
+# React RetroGames (still in develop)
 
 A collection of mini-games built using React.
 
