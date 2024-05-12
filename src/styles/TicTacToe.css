@@ -1,0 +1,42 @@
+/* Tic Tac Toe board */
+.ttt-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+/* Tic Tac Toe cells */
+.cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    width: 100px;
+    height: 100px;
+}
+
+/* Styling for X */
+.cell.x {
+    color: #ff0000;
+}
+
+/* Styling for O */
+.cell.o {
+    color: #0000ff;
+}
+
+/* Styling for the winning cells */
+.cell.winner {
+    background-color: #ffff00;
+}
+
+.game-info {
+    text-align: center;
+    margin-bottom: 20px;
+}
