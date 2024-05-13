@@ -1,4 +1,4 @@
-export function calculateWinner(squares) {
+function calculateWinner(squares) {
     const winningLines = [
         [0, 1, 2],
         [3, 4, 5],
@@ -12,7 +12,7 @@ export function calculateWinner(squares) {
 
     for (const line of winningLines) {
         const [a, b, c] = line;
-        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        if (squares[a] === squares[b] && squares[a] === squares[c]) {
             return squares[a];
         }
     }
@@ -20,6 +20,11 @@ export function calculateWinner(squares) {
     return null;
 }
 
-export function isDraw(squares) {
+function isDraw(squares) {
     return squares.every(square => square);
+}
+
+export {
+    calculateWinner,
+    isDraw
 }
