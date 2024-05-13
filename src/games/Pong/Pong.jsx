@@ -16,8 +16,8 @@ const Pong = () => {
 
   return (
     <div className="pong-game">
-      <Board />
       <GameInfo score={gameState.score} />
+      <Board />
       <ResetBt reset={handleReset} />
     </div>
   );
