@@ -29,9 +29,9 @@ const TicTacToe = () => {
   };
 
   return (
-    <div className="game">
-      <Board squares={squares} onClick={handleClick} />
+    <div className="ttt-game">
       <GameInfo winner={winner} isDraw={draw} xIsNext={xIsNext} />
+      <Board squares={squares} onClick={handleClick} />
       <ResetBt reset={handleReset} />
     </div>
   );
