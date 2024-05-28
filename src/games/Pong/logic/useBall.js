@@ -4,13 +4,13 @@ const getVelocityMagnitude = (boardSize) => {
     return Math.sqrt((boardSize.width ** 2 + boardSize.height ** 2)) * 0.005;
 };
 
-const getRandomVelocity = (boardSize) => {
+const getRandomVelocity = (boardSize, ballXVelocityVariable) => {
     const magnitude = getVelocityMagnitude(boardSize);
     const xDirection = Math.random() > 0.5 ? 1 : -1;
     const yDirection = Math.random() > 0.5 ? 1 : -1;
-    const xVelocity = Math.abs(magnitude * 0.707) * xDirection; // Normalize by sqrt(2) to keep velocity constant
+    const xVelocity = Math.abs(magnitude * ballXVelocityVariable) * xDirection;
     let yVelocity = magnitude * Math.random() * yDirection;
-    const minYVelocity = magnitude * 0.5; // Adjust this value for the minimum vertical velocity
+    const minYVelocity = magnitude * 0.5;
     if (Math.abs(yVelocity) < minYVelocity) {
         yVelocity = yDirection * minYVelocity;
     }
@@ -28,14 +28,35 @@ const checkPaddleCollision = (paddle, ballPos, diameter) => {
 };
 
 const useBall = (boardSize, paddles, gameState, setGameState) => {
-    const diameter = useMemo(() => Math.round(boardSize.height * 0.035), [boardSize.height]);
+    let ballXVelocityVariable = 0.707;
+    let ballDiameterVariable = 0.035;
+    switch (gameState.dificulty) {
+        case 1:
+            ballXVelocityVariable = 0.5;
+            ballDiameterVariable = 0.05;
+            break;
+        case 2:
+            ballXVelocityVariable = 0.707;
+            ballDiameterVariable = 0.035;
+            break;
+        case 3:
+            ballXVelocityVariable = 0.9;
+            ballDiameterVariable = 0.02;
+            break;
+        default:
+            ballXVelocityVariable = 0.707;
+            ballDiameterVariable = 0.035;
+            break;
+    }
+
+    const diameter = useMemo(() => Math.round(boardSize.height * ballDiameterVariable), [boardSize.height, ballDiameterVariable]);
     const initialPosition = useMemo(() => ({
         x: boardSize.width / 2 - diameter / 2,
         y: boardSize.height / 2 - diameter / 2,
     }), [boardSize.width, boardSize.height, diameter]);
 
     const [position, setPosition] = useState(initialPosition);
-    const velocityRef = useRef(getRandomVelocity(boardSize));
+    const velocityRef = useRef(getRandomVelocity(boardSize, ballXVelocityVariable));
     const positionRef = useRef(position);
     const animationFrameRef = useRef();
 
@@ -74,7 +95,7 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
                     };
                 }
 
-                velocityRef.current = getRandomVelocity(boardSize);
+                velocityRef.current = getRandomVelocity(boardSize, ballXVelocityVariable);
                 positionRef.current = initialPosition;
                 return {
                     ...prevState,
@@ -87,13 +108,13 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
         }
 
         animationFrameRef.current = requestAnimationFrame(updatePosition);
-    }, [boardSize, diameter, gameState, setGameState, initialPosition]);
+    }, [boardSize, diameter, gameState, setGameState, initialPosition, ballXVelocityVariable]);
 
     useEffect(() => {
         positionRef.current = initialPosition;
         setPosition(initialPosition);
-        velocityRef.current = getRandomVelocity(boardSize);
-    }, [boardSize, initialPosition]);
+        velocityRef.current = getRandomVelocity(boardSize, ballXVelocityVariable);
+    }, [boardSize, initialPosition, ballXVelocityVariable]);
 
     useEffect(() => {
         if (!gameState.isPaused) {

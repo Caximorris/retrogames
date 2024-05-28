@@ -1,10 +1,31 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 
 const usePaddle = (boardSize, upKey, downKey, playerOne, gameState) => {
+    let paddleHeightVariable = 0.15;
+    let paddleWidthVariable = 0.01;
+    switch (gameState.dificulty) {
+        case 1:
+            paddleHeightVariable = 0.2;
+            paddleWidthVariable = 0.015;
+            break;
+        case 2:
+            paddleHeightVariable = 0.15;
+            paddleWidthVariable = 0.01;
+            break;
+        case 3:
+            paddleHeightVariable = 0.1;
+            paddleWidthVariable = 0.005;
+            break;
+        default:
+            paddleHeightVariable = 0.15;
+            paddleWidthVariable = 0.01;
+            break;
+    }
+
     const size = useMemo(() => ({
-        height: Math.round(boardSize.height * 0.15),
-        width: Math.round(boardSize.width * 0.01)
-    }), [boardSize.height, boardSize.width]);
+        height: Math.round(boardSize.height * paddleHeightVariable),
+        width: Math.round(boardSize.width * paddleWidthVariable)
+    }), [boardSize.height, boardSize.width, paddleHeightVariable, paddleWidthVariable]);
 
     const initialPosition = useMemo(() => Math.round(boardSize.height / 2 - size.height / 2), [boardSize.height, size.height]);
     const [position, setPosition] = useState(initialPosition);

@@ -9,7 +9,7 @@ const PausePong = ({ gameState, setGameState }) => {
         }));
     };
 
-    if (gameState.score.winner) {
+    if (gameState.score.winner || !gameState.dificulty) {
         return null;
     }
 

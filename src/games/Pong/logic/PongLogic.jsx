@@ -6,7 +6,8 @@ function initializeGame() {
             winner: null
         },
         hasStarted: false,
-        isPaused: true
+        isPaused: true,
+        dificulty: null
     }
 }
 

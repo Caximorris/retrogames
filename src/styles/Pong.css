@@ -48,6 +48,12 @@
     margin: 0.5rem 0;
 }
 
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
 .pong-net {
     position: absolute;
     top: 0;

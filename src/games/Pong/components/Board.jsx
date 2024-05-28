@@ -50,6 +50,17 @@ const Board = ({ gameState, setGameState }) => {
                     <h1 className="paused-pong">Pong Multiplayer</h1>
                     <h4 className="paused-pong">Use W and S to move Player 1</h4>
                     <h4 className="paused-pong">Use the arrow keys to move Player 2</h4>
+                    <div className="button-container">
+                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, dificulty: 1 })}>
+                            Easy
+                        </button>
+                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, dificulty: 2 })}>
+                            Medium
+                        </button>
+                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, dificulty: 3 })}>
+                            Hard
+                        </button>
+                    </div>
                 </div>
             </div>
         );
