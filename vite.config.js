@@ -5,7 +5,15 @@ import process from 'process'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  build: {
+    outDir: 'dist'
+  },
   server: {
-    port: process.env.PORT || 3000
+    port: process.env.PORT || 5173,
+    host: '0.0.0.0'
+  },
+  preview: {
+    port: process.env.PORT || 4173,
+    host: '0.0.0.0'
   }
 })
