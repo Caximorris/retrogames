@@ -28,7 +28,7 @@ const checkPaddleCollision = (paddle, ballPos, diameter) => {
 };
 
 const useBall = (boardSize, paddles, gameState, setGameState) => {
-    const diameter = useMemo(() => Math.round(boardSize.height * 0.025), [boardSize.height]);
+    const diameter = useMemo(() => Math.round(boardSize.height * 0.035), [boardSize.height]);
     const initialPosition = useMemo(() => ({
         x: boardSize.width / 2 - diameter / 2,
         y: boardSize.height / 2 - diameter / 2,
