@@ -5,7 +5,9 @@ function initializeGame() {
             player2: 0,
             winner: null
         },
-        isPaused: true
+        hasStarted: false,
+        isPaused: true,
+        dificulty: null
     }
 }
 

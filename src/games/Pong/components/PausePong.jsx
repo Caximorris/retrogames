@@ -4,13 +4,18 @@ const PausePong = ({ gameState, setGameState }) => {
     const handlePause = () => {
         setGameState((prevState) => ({
             ...prevState,
-            isPaused: !prevState.isPaused
+            isPaused: !prevState.isPaused,
+            hasStarted: true
         }));
     };
 
+    if (gameState.score.winner || !gameState.dificulty) {
+        return null;
+    }
+
     return (
         <button onClick={handlePause}>
-            {gameState.isPaused && gameState.score.player1 === 0 && gameState.score.player2 === 0 ? 'Start Game' : gameState.isPaused ? 'Resume' : 'Pause'}
+            {!gameState.hasStarted ? 'Start Game' : gameState.isPaused ? 'Resume' : 'Pause'}
         </button>
     );
 };

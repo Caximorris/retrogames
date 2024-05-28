@@ -1,3 +1,4 @@
+.paused-board,
 .pong-board {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -13,14 +14,13 @@
     border: 2px solid rgb(65, 62, 62);
 }
 
-.pong-board>* {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+.pong-board {
+    background-color: black;
 }
 
-.paused-pong {
+.paused-pong-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     position: absolute;
@@ -30,16 +30,41 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
-    font-size: 2rem;
     z-index: 1;
 }
 
-.ball {
+.paused-pong {
+    text-align: center;
+    margin: 0.5rem;
+}
+
+.paused-pong h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.paused-pong h4 {
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.pong-net {
     position: absolute;
-    top: 50%;
+    top: 0;
     left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    width: 20px;
-    height: 20px;
+    width: 2px;
+    height: 100%;
+    background: repeating-linear-gradient(
+        to bottom,
+        white,
+        white 10px,
+        transparent 10px,
+        transparent 20px
+    );
 }
