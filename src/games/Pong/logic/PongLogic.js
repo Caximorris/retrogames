@@ -7,7 +7,8 @@ function initializeGame() {
         },
         hasStarted: false,
         isPaused: true,
-        dificulty: null
+        dificulty: null,
+        AIplayer: null
     }
 }
 
