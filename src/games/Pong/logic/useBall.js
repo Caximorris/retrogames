@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useEffect, useRef, useMemo, useCallback, useState } from 'react';
 
 const getVelocityMagnitude = (boardSize) => {
     return Math.sqrt((boardSize.width ** 2 + boardSize.height ** 2)) * 0.005;
@@ -55,7 +55,7 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
         y: boardSize.height / 2 - diameter / 2,
     }), [boardSize.width, boardSize.height, diameter]);
 
-    const [position, setPosition] = useState(initialPosition);
+    const [position, setPosition] = useState(initialPosition); // [1
     const velocityRef = useRef(getRandomVelocity(boardSize, ballXVelocityVariable));
     const positionRef = useRef(position);
     const animationFrameRef = useRef();
@@ -108,13 +108,13 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
         }
 
         animationFrameRef.current = requestAnimationFrame(updatePosition);
-    }, [boardSize, diameter, gameState, setGameState, initialPosition, ballXVelocityVariable]);
+    }, [boardSize, diameter, gameState, setGameState, initialPosition, ballXVelocityVariable, setPosition]);
 
     useEffect(() => {
         positionRef.current = initialPosition;
         setPosition(initialPosition);
         velocityRef.current = getRandomVelocity(boardSize, ballXVelocityVariable);
-    }, [boardSize, initialPosition, ballXVelocityVariable]);
+    }, [boardSize, initialPosition, ballXVelocityVariable, setPosition]);
 
     useEffect(() => {
         if (!gameState.isPaused) {

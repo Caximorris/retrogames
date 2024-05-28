@@ -4,9 +4,7 @@ const HomePage = () => {
     const navigate = useNavigate();
 
     const handleGameSelection = (game) => {
-        console.log(`You selected the ${game} game!`);
         navigate(`/${game.toLowerCase().replace(/\s/g, '-')}`);
-
     };
 
     return (
