@@ -35,10 +35,18 @@ const Board = ({ gameState, setGameState }) => {
         return <div ref={boardRef} className="pong-board" />
     }
 
+    if (gameState.score.winner) {
+        return <div ref={boardRef} className="pong-board">
+            <h1 className="paused-pong">
+                {gameState.score.winner === 1 ? 'Player 1 Wins!' : 'Player 2 Wins!'}
+            </h1>
+        </div>
+    }
+
     if (gameState.isPaused) {
         return <div ref={boardRef} className="pong-board">
             <h1 className="paused-pong">
-                {gameState.isPaused && gameState.score.player1 === 0 && gameState.score.player2 === 0 ? 'Pong Classic' : gameState.isPaused ? 'Resume' : 'Pause'}
+                {!gameState.hasStarted ? 'Pong Classic' : gameState.isPaused ? 'Resume' : 'Pause'}
             </h1>
         </div>
     }
