@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import BoardContainer from './components/BoardContainer';
 import GameInfo from './components/GameInfo';
-import { initializeGame } from './logic/pongLogic';
+import { initializeGame } from './logic/PongLogic';
 import ResetBt from '../../components/ResetBt';
 import PausePong from './components/PausePong';
 
