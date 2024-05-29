@@ -10,8 +10,7 @@ const Board = ({ gameState, setGameState, playerOne, playerTwo, boardSize, setBo
 
     useEffect(() => {
         onBallPositionChange(ball.position);
-    }
-    , [ball.position, onBallPositionChange]);
+    }, [ball.position, onBallPositionChange]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -40,7 +39,7 @@ const Board = ({ gameState, setGameState, playerOne, playerTwo, boardSize, setBo
             <Ball {...ball} />
         </div>
     );
-}
+};
 
 Board.propTypes = {
     gameState: PropTypes.object.isRequired,

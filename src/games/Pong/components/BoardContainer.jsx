@@ -8,7 +8,7 @@ const BoardContainer = ({ gameState, setGameState }) => {
     const [boardSize, setBoardSize] = useState({ width: 800, height: 400 }); // Default size or state
     const playerOne = usePaddle(boardSize, 'w', 's', true, gameState);
     const playerTwo = usePaddle(boardSize, 'ArrowUp', 'ArrowDown', false, gameState);
-    const {paddle: AIPaddle, handleBallPositionChange} = useAIPaddle(boardSize, gameState);
+    const { paddle: AIPaddle, handleBallPositionChange } = useAIPaddle(boardSize, gameState);
 
     if (gameState.score.winner) {
         return (
@@ -64,11 +64,13 @@ const BoardContainer = ({ gameState, setGameState }) => {
     }
 
     if (gameState.isPaused) {
-        return <div className="paused-board">
-            <div className="paused-pong-container">
-                <h1 className="paused-pong">Resume</h1>
+        return (
+            <div className="paused-board">
+                <div className="paused-pong-container">
+                    <h1 className="paused-pong">Resume</h1>
+                </div>
             </div>
-        </div>
+        );
     }
 
     return (

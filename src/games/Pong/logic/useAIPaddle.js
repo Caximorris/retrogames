@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 
 const useAIPaddle = (boardSize, gameState) => {
-    const [ball, setBall] = useState({ position: { x: 0, y: 0 }});
+    const [ball, setBall] = useState({ position: { x: 0, y: 0 } });
     let paddleHeightVariable = 0.15;
     let paddleWidthVariable = 0.01;
     switch (gameState.dificulty) {
@@ -89,11 +89,11 @@ const useAIPaddle = (boardSize, gameState) => {
         }, size
     };
 
-    const handleBallPositionChange = (position) => {
-        setBall({...ball, position});
-    };
+    const handleBallPositionChange = useCallback((position) => {
+        setBall(prevBall => ({ ...prevBall, position }));
+    }, []);
 
-    return {paddle, handleBallPositionChange};
+    return { paddle, handleBallPositionChange };
 };
 
 export default useAIPaddle;
