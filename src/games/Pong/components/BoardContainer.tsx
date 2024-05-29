@@ -1,5 +1,6 @@
 import {Dispatch, FC, SetStateAction, useState} from 'react';
-import usePaddle from '../logic/usePaddle.js';
+import usePaddle from '../logic/usePaddle';
+import useAIPaddle from '../logic/useAIPaddle';
 import {GameState} from "../model/pong-model";
 import Board from "./Board";
 
@@ -10,9 +11,10 @@ type BoardContainerProps = {
 
 const BoardContainer: FC<BoardContainerProps> = ({ gameState, setGameState }) => {
     const [boardSize, setBoardSize] = useState({ width: 800, height: 400 }); // Default size or state
-    const { paddle: playerOne, handleBallPositionChange } = usePaddle(boardSize, 'w', 's', true, gameState);
-    const { paddle: playerTwo} = usePaddle(boardSize, 'ArrowUp', 'ArrowDown', false, gameState);
-    
+    const {paddle: playerOne} = usePaddle(boardSize, 'w', 's', true, gameState);
+    const {paddle: playerTwo} = usePaddle(boardSize, 'ArrowUp', 'ArrowDown', false, gameState);
+    const { paddle: AIPaddle, handleBallPositionChange } = useAIPaddle(boardSize, gameState);
+
     if (gameState.score.winner) {
         return (
             <div className="paused-board">
@@ -84,7 +86,7 @@ const BoardContainer: FC<BoardContainerProps> = ({ gameState, setGameState }) =>
         <Board
             gameState={gameState}
             setGameState={setGameState}
-            playerOne={playerOne}
+            playerOne={gameState.gameMode === "singlePlayer" ? AIPaddle : playerOne}
             playerTwo={playerTwo}
             boardSize={boardSize}
             setBoardSize={setBoardSize}

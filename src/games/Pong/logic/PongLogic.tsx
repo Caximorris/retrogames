@@ -1,4 +1,4 @@
-import {GameState} from "../model/pong-model.js";
+import {GameState} from "../model/pong-model";
 
 function initializeGame(): GameState {
     return {

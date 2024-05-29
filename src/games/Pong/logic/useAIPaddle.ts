@@ -1,12 +1,16 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { GameState, Paddle } from "../model/pong-model";
 
-const useAIPaddle = (boardSize, gameState) => {
+const useAIPaddle = (boardSize: { width: number, height: number }, gameState: GameState): {
+    paddle: Paddle
+    handleBallPositionChange: (position: {x: number, y: number}) => void
+} => {
     const [ball, setBall] = useState({ position: { x: 0, y: 0 } });
 
     let velocity = 0.3;
     let paddleHeightVariable = 0.15;
     let paddleWidthVariable = 0.01;
-    switch (gameState.dificulty) {
+    switch (gameState.difficulty) {
         case 1:
             paddleHeightVariable = 0.2;
             paddleWidthVariable = 0.015;
@@ -38,9 +42,9 @@ const useAIPaddle = (boardSize, gameState) => {
     const [position, setPosition] = useState(initialPosition);
     const positionRef = useRef(position);
     const boardSizeRef = useRef(boardSize);
-    const animationFrameRef = useRef();
+    const animationFrameRef = useRef<number>();
 
-    const getNextPaddlePosition = useCallback((currentPosition, targetPosition) => {
+    const getNextPaddlePosition = useCallback((currentPosition: number, targetPosition: number) => {
         const adjustmentSize = Math.round(boardSize.height * 0.01 * velocity);
         const direction = targetPosition > currentPosition ? 1 : -1;
         const adjustment = direction * adjustmentSize;
@@ -51,6 +55,7 @@ const useAIPaddle = (boardSize, gameState) => {
     useEffect(() => {
         const gameLoop = () => {
             let nextPosition = positionRef.current;
+
             if (gameState.hasStarted && ball.position.x < boardSize.width / 2) {
                 nextPosition = getNextPaddlePosition(nextPosition, ball.position.y);
             }
@@ -67,7 +72,7 @@ const useAIPaddle = (boardSize, gameState) => {
         }
 
         return () => {
-            cancelAnimationFrame(animationFrameRef.current);
+            cancelAnimationFrame(animationFrameRef.current as number);
         };
     }, [ball.position.y, ball.position.x, getNextPaddlePosition, gameState.hasStarted, gameState.isPaused, boardSize.width]);
 
@@ -95,7 +100,7 @@ const useAIPaddle = (boardSize, gameState) => {
         }, size
     };
 
-    const handleBallPositionChange = useCallback((position) => {
+    const handleBallPositionChange = useCallback((position: {x: number, y: number}) => {
         setBall(prevBall => ({ ...prevBall, position }));
     }, []);
 
