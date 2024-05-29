@@ -20,11 +20,22 @@ const getRandomVelocity = (boardSize, ballXVelocityVariable) => {
     };
 };
 
-const checkPaddleCollision = (paddle, ballPos, diameter) => {
-    return ballPos.x + diameter >= paddle.position.x &&
-        ballPos.x <= paddle.position.x + paddle.size.width &&
-        ballPos.y + diameter >= paddle.position.y &&
-        ballPos.y <= paddle.position.y + paddle.size.height;
+const checkPaddleCollision = (paddle, ballPos, diameter, isPlayerOne) => {
+    const paddleXEnd = paddle.position.x + paddle.size.width;
+    const paddleYEnd = paddle.position.y + paddle.size.height;
+    if (isPlayerOne) {
+        // For player one, collision should occur only on the right side of the paddle
+        return ballPos.x + diameter <= paddleXEnd &&
+            ballPos.x + diameter >= paddle.position.x &&
+            ballPos.y + diameter >= paddle.position.y &&
+            ballPos.y <= paddleYEnd;
+    } else {
+        // For player two, collision should occur only on the left side of the paddle
+        return ballPos.x + diameter >= paddle.position.x &&
+            ballPos.x <= paddleXEnd &&
+            ballPos.y + diameter >= paddle.position.y &&
+            ballPos.y <= paddleYEnd;
+    }
 };
 
 const useBall = (boardSize, paddles, gameState, setGameState) => {
@@ -55,7 +66,7 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
         y: boardSize.height / 2 - diameter / 2,
     }), [boardSize.width, boardSize.height, diameter]);
 
-    const [position, setPosition] = useState(initialPosition); // [1
+    const [position, setPosition] = useState(initialPosition);
     const velocityRef = useRef(getRandomVelocity(boardSize, ballXVelocityVariable));
     const positionRef = useRef(position);
     const animationFrameRef = useRef();
@@ -70,17 +81,17 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
             y: positionRef.current.y + velocityRef.current.y
         };
 
-        if (newPos.y <= 0 + diameter || newPos.y >= boardSize.height - diameter) {
+        if (newPos.y <= 0 || newPos.y + diameter >= boardSize.height) {
             velocityRef.current.y *= -1;
-            newPos.y = positionRef.current.y + velocityRef.current.y;
+            newPos.y = newPos.y <= 0 ? 0 : boardSize.height - diameter;
         }
 
-        if (newPos.x <= 0 || newPos.x >= boardSize.width) {
+        if (newPos.x <= 0 || newPos.x + diameter >= boardSize.width) {
             setGameState((prevState) => {
                 const updatedScore = {
                     ...prevState.score,
-                    player1: newPos.x >= boardSize.width - diameter ? prevState.score.player1 + 1 : prevState.score.player1,
-                    player2: newPos.x <= 0 + diameter ? prevState.score.player2 + 1 : prevState.score.player2,
+                    player1: newPos.x + diameter >= boardSize.width ? prevState.score.player1 + 1 : prevState.score.player1,
+                    player2: newPos.x <= 0 ? prevState.score.player2 + 1 : prevState.score.player2,
                 };
 
                 const winner = updatedScore.player1 === 10 ? 1 : updatedScore.player2 === 10 ? 2 : null;
@@ -108,13 +119,13 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
         }
 
         animationFrameRef.current = requestAnimationFrame(updatePosition);
-    }, [boardSize, diameter, gameState, setGameState, initialPosition, ballXVelocityVariable, setPosition]);
+    }, [boardSize, diameter, gameState, setGameState, initialPosition, ballXVelocityVariable]);
 
     useEffect(() => {
         positionRef.current = initialPosition;
         setPosition(initialPosition);
         velocityRef.current = getRandomVelocity(boardSize, ballXVelocityVariable);
-    }, [boardSize, initialPosition, ballXVelocityVariable, setPosition]);
+    }, [boardSize, initialPosition, ballXVelocityVariable]);
 
     useEffect(() => {
         if (!gameState.isPaused) {
@@ -133,8 +144,10 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
                 y: positionRef.current.y + velocityRef.current.y
             };
 
-            if (checkPaddleCollision(paddle, newPos, diameter, index === 0 ? 1 : -1)) {
-                velocityRef.current.x = -velocityRef.current.x;
+            if (checkPaddleCollision(paddle, newPos, diameter, index)) {
+                velocityRef.current.x *= -1;
+                setPosition(newPos);
+                positionRef.current = newPos;
             }
         });
     }, [paddles, diameter]);

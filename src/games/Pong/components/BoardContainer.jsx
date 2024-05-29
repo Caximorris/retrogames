@@ -44,8 +44,12 @@ const BoardContainer = ({ gameState, setGameState }) => {
         return (
             <div className="paused-board">
                 <div className="paused-pong-container">
-                    <h1 className="paused-pong">Pong Multiplayer</h1>
-                    <h4 className="paused-pong">Use W and S to move left player</h4>
+                    <h1 className="paused-pong">
+                        {gameState.AIPlayer === 1 ? 'Pong Singleplayer' : 'Pong Multiplayer'}
+                    </h1>
+                    <h4 className="paused-pong">
+                        {gameState.AIPlayer === 2 ? 'Use W and S to move left player' : null}
+                    </h4>
                     <h4 className="paused-pong">Use the arrow keys to move right player</h4>
                     <div className="button-container">
                         <button className="paused-pong" onClick={() => setGameState({ ...gameState, dificulty: 1 })}>
