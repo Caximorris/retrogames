@@ -1,9 +1,14 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
-import usePaddle from '../logic/usePaddle';
-import Board from './Board';
+import {Dispatch, FC, SetStateAction, useState} from 'react';
+import usePaddle from '../logic/usePaddle.js';
+import {GameState} from "../model/pong-model";
+import Board from "./Board";
 
-const BoardContainer = ({ gameState, setGameState }) => {
+type BoardContainerProps = {
+    gameState: GameState
+    setGameState: Dispatch<SetStateAction<GameState>>
+}
+
+const BoardContainer: FC<BoardContainerProps> = ({ gameState, setGameState }) => {
     const [boardSize, setBoardSize] = useState({ width: 800, height: 400 }); // Default size or state
     const { paddle: playerOne, handleBallPositionChange } = usePaddle(boardSize, 'w', 's', true, gameState);
     const { paddle: playerTwo} = usePaddle(boardSize, 'ArrowUp', 'ArrowDown', false, gameState);
@@ -50,13 +55,13 @@ const BoardContainer = ({ gameState, setGameState }) => {
                     </h4>
                     <h4 className="paused-pong">Use the arrow keys to move right player</h4>
                     <div className="button-container">
-                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, dificulty: 1 })}>
+                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, difficulty: 1 })}>
                             Easy
                         </button>
-                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, dificulty: 2 })}>
+                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, difficulty: 2 })}>
                             Medium
                         </button>
-                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, dificulty: 3 })}>
+                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, difficulty: 3 })}>
                             Hard
                         </button>
                     </div>
@@ -86,11 +91,6 @@ const BoardContainer = ({ gameState, setGameState }) => {
             onBallPositionChange={handleBallPositionChange}
         />
     );
-};
-
-BoardContainer.propTypes = {
-    gameState: PropTypes.object.isRequired,
-    setGameState: PropTypes.func.isRequired
 };
 
 export default BoardContainer;
