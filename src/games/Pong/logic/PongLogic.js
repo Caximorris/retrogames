@@ -8,7 +8,7 @@ function initializeGame() {
         hasStarted: false,
         isPaused: true,
         dificulty: null,
-        AIplayer: null
+        gameMode: null
     }
 }
 

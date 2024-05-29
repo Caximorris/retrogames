@@ -25,7 +25,7 @@ const checkPaddleCollision = (paddle, ballPos, diameter, isPlayerOne) => {
     const paddleYEnd = paddle.position.y + paddle.size.height;
     if (isPlayerOne) {
         // For player one, collision should occur only on the right side of the paddle
-        return ballPos.x + diameter <= paddleXEnd &&
+        return ballPos.x <= paddleXEnd &&
             ballPos.x + diameter >= paddle.position.x &&
             ballPos.y + diameter >= paddle.position.y &&
             ballPos.y <= paddleYEnd;

@@ -9,12 +9,10 @@ const PausePong = ({ gameState, setGameState }) => {
         }));
     };
 
-    if (gameState.score.winner || !gameState.dificulty) {
-        return null;
-    }
-
+    const isDisabled = gameState.score.winner || !gameState.dificulty;
+    
     return (
-        <button onClick={handlePause}>
+        <button onClick={handlePause} disabled={isDisabled} style={{opacity: isDisabled ? 0.3 : 1}}>
             {!gameState.hasStarted ? 'Start Game' : gameState.isPaused ? 'Resume' : 'Pause'}
         </button>
     );
