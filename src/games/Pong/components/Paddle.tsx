@@ -1,6 +1,17 @@
-import PropTypes from 'prop-types';
+import {FC} from "react";
 
-const Paddle = ({position, size}) => {
+type PaddleProps = {
+    position: {
+        x: number;
+        y: number;
+    };
+    size: {
+        width: number;
+        height: number;
+    };
+}
+
+const Paddle: FC<PaddleProps> = ({position, size}) => {
 
     return (
         <div
@@ -16,16 +27,5 @@ const Paddle = ({position, size}) => {
         />
     );
 }
-
-Paddle.propTypes = {
-    position: PropTypes.shape({
-        x: PropTypes.number.isRequired,
-        y: PropTypes.number.isRequired
-    }),
-    size: PropTypes.shape({
-        width: PropTypes.number.isRequired,
-        height: PropTypes.number.isRequired
-    })
-};
 
 export default Paddle;

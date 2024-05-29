@@ -1,31 +1,27 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { GameState, Paddle } from "../model/pong-model";
 
-const useAIPaddle = (boardSize, gameState) => {
-    const [ball, setBall] = useState({ position: { x: 0, y: 0 } });
-
-    let velocity = 0.3;
+const usePaddle = (boardSize: { width: number, height: number }, upKey: string, downKey: string, playerOne: boolean, gameState: GameState): {
+    paddle: Paddle
+} => {
     let paddleHeightVariable = 0.15;
     let paddleWidthVariable = 0.01;
-    switch (gameState.dificulty) {
+    switch (gameState.difficulty) {
         case 1:
             paddleHeightVariable = 0.2;
             paddleWidthVariable = 0.015;
-            velocity = 0.15;
             break;
         case 2:
             paddleHeightVariable = 0.15;
             paddleWidthVariable = 0.01;
-            velocity = 0.22;
             break;
         case 3:
             paddleHeightVariable = 0.1;
             paddleWidthVariable = 0.005;
-            velocity = 0.35;
             break;
         default:
             paddleHeightVariable = 0.15;
             paddleWidthVariable = 0.01;
-            velocity = 0.25;
             break;
     }
 
@@ -38,21 +34,48 @@ const useAIPaddle = (boardSize, gameState) => {
     const [position, setPosition] = useState(initialPosition);
     const positionRef = useRef(position);
     const boardSizeRef = useRef(boardSize);
-    const animationFrameRef = useRef();
+    const animationFrameRef = useRef<number>();
 
-    const getNextPaddlePosition = useCallback((currentPosition, targetPosition) => {
-        const adjustmentSize = Math.round(boardSize.height * 0.01 * velocity);
-        const direction = targetPosition > currentPosition ? 1 : -1;
-        const adjustment = direction * adjustmentSize;
+    const getNextPaddlePosition = useCallback((currentPosition: number, isGoingUp: boolean) => {
+        const adjustmentSize = Math.round(boardSize.height * 0.01);
+        const adjustment = isGoingUp ? -adjustmentSize : adjustmentSize;
         const newPosition = currentPosition + adjustment;
         return Math.max(0, Math.min(boardSize.height - size.height, newPosition));
-    }, [boardSize.height, size.height, velocity]);
+    }, [boardSize.height, size.height]);
 
     useEffect(() => {
+        const keyState: { [key: string]: boolean } = {};
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === upKey || e.key === downKey) {
+                e.preventDefault();
+                if (!gameState.isPaused && gameState.hasStarted) {
+                    keyState[e.key] = true;
+                }
+            }
+        };
+
+        const handleKeyUp = (e: KeyboardEvent) => {
+            if (e.key === upKey || e.key === downKey) {
+                e.preventDefault();
+                if (!gameState.isPaused && gameState.hasStarted) {
+                    keyState[e.key] = false;
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+
         const gameLoop = () => {
             let nextPosition = positionRef.current;
-            if (gameState.hasStarted && ball.position.x < boardSize.width / 2) {
-                nextPosition = getNextPaddlePosition(nextPosition, ball.position.y);
+
+            if (gameState.hasStarted) {
+                if (keyState[upKey]) {
+                    nextPosition = getNextPaddlePosition(nextPosition, true);
+                } else if (keyState[downKey]) {
+                    nextPosition = getNextPaddlePosition(nextPosition, false);
+                }
             }
 
             if (positionRef.current !== nextPosition) {
@@ -62,21 +85,21 @@ const useAIPaddle = (boardSize, gameState) => {
             animationFrameRef.current = requestAnimationFrame(gameLoop);
         };
 
-        if (!gameState.isPaused) {
-            gameLoop();
-        }
+        gameLoop();
 
         return () => {
-            cancelAnimationFrame(animationFrameRef.current);
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keyup', handleKeyUp);
+            cancelAnimationFrame(animationFrameRef.current as number);
         };
-    }, [ball.position.y, ball.position.x, getNextPaddlePosition, gameState.hasStarted, gameState.isPaused, boardSize.width]);
+    }, [upKey, downKey, getNextPaddlePosition, gameState]);
 
     useEffect(() => {
         if (!gameState.hasStarted) {
             setPosition(initialPosition);
             positionRef.current = initialPosition;
         }
-    }, [gameState.hasStarted, initialPosition]);
+    }, [gameState.hasStarted, initialPosition, setPosition]);
 
     useEffect(() => {
         if (boardSizeRef.current.height !== boardSize.height) {
@@ -88,18 +111,15 @@ const useAIPaddle = (boardSize, gameState) => {
     }, [boardSize, position]);
 
     const leftPosition = Math.round(boardSize.width * 0.05);
+    const rightPosition = boardSize.width - size.width - leftPosition;
     const paddle = {
         position: {
-            x: leftPosition,
+            x: playerOne ? leftPosition : rightPosition,
             y: position,
         }, size
     };
 
-    const handleBallPositionChange = useCallback((position) => {
-        setBall(prevBall => ({ ...prevBall, position }));
-    }, []);
-
-    return { paddle, handleBallPositionChange };
+    return {paddle};
 };
 
-export default useAIPaddle;
+export default usePaddle;

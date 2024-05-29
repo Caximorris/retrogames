@@ -1,6 +1,11 @@
-import PropTypes from "prop-types";
+import {FC} from "react";
 
-const Ball = ({position, diameter}) => {
+type BallProps = {
+    position: { x: number, y: number },
+    diameter: number
+}
+
+const Ball: FC<BallProps> = ({position, diameter}) => {
     return (
         <div
             className="ball"
@@ -16,13 +21,5 @@ const Ball = ({position, diameter}) => {
         />
     );
 };
-
-Ball.propTypes = {
-    diameter: PropTypes.number.isRequired,
-    position: PropTypes.shape({
-        x: PropTypes.number.isRequired,
-        y: PropTypes.number.isRequired
-    })
-}
 
 export default Ball;

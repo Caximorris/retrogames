@@ -1,10 +1,11 @@
-import { useEffect, useRef, useMemo, useCallback, useState } from 'react';
+import {useEffect, useRef, useMemo, useCallback, useState, SetStateAction, Dispatch} from 'react';
+import {GameState, Paddle} from "../model/pong-model";
 
-const getVelocityMagnitude = (boardSize) => {
+const getVelocityMagnitude = (boardSize: {width: number, height: number}) => {
     return Math.sqrt((boardSize.width ** 2 + boardSize.height ** 2)) * 0.005;
 };
 
-const getRandomVelocity = (boardSize, ballXVelocityVariable) => {
+const getRandomVelocity = (boardSize: {width: number, height: number}, ballXVelocityVariable: number) => {
     const magnitude = getVelocityMagnitude(boardSize);
     const xDirection = Math.random() > 0.5 ? 1 : -1;
     const yDirection = Math.random() > 0.5 ? 1 : -1;
@@ -20,17 +21,28 @@ const getRandomVelocity = (boardSize, ballXVelocityVariable) => {
     };
 };
 
-const checkPaddleCollision = (paddle, ballPos, diameter) => {
-    return ballPos.x + diameter >= paddle.position.x &&
-        ballPos.x <= paddle.position.x + paddle.size.width &&
-        ballPos.y + diameter >= paddle.position.y &&
-        ballPos.y <= paddle.position.y + paddle.size.height;
+const checkPaddleCollision = (paddle: Paddle, ballPos: {x: number, y: number}, diameter: number, isPlayerOne: number) => {
+    const paddleXEnd = paddle.position.x + paddle.size.width;
+    const paddleYEnd = paddle.position.y + paddle.size.height;
+    if (isPlayerOne) {
+        // For player one, collision should occur only on the right side of the paddle
+        return ballPos.x <= paddleXEnd &&
+            ballPos.x + diameter >= paddle.position.x &&
+            ballPos.y + diameter >= paddle.position.y &&
+            ballPos.y <= paddleYEnd;
+    } else {
+        // For player two, collision should occur only on the left side of the paddle
+        return ballPos.x + diameter >= paddle.position.x &&
+            ballPos.x <= paddleXEnd &&
+            ballPos.y + diameter >= paddle.position.y &&
+            ballPos.y <= paddleYEnd;
+    }
 };
 
-const useBall = (boardSize, paddles, gameState, setGameState) => {
-    let ballXVelocityVariable = 0.707;
-    let ballDiameterVariable = 0.035;
-    switch (gameState.dificulty) {
+const difficultySettings = (difficulty: number | null) => {
+    let ballXVelocityVariable;
+    let ballDiameterVariable;
+    switch (difficulty) {
         case 1:
             ballXVelocityVariable = 0.5;
             ballDiameterVariable = 0.05;
@@ -48,6 +60,11 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
             ballDiameterVariable = 0.035;
             break;
     }
+    return { ballXVelocityVariable, ballDiameterVariable };
+}
+
+export const useBall = (boardSize: {width: number, height: number}, paddles: [Paddle, Paddle], gameState: GameState, setGameState: Dispatch<SetStateAction<GameState>>) => {
+    const { ballXVelocityVariable, ballDiameterVariable } = difficultySettings(gameState.difficulty);
 
     const diameter = useMemo(() => Math.round(boardSize.height * ballDiameterVariable), [boardSize.height, ballDiameterVariable]);
     const initialPosition = useMemo(() => ({
@@ -55,32 +72,32 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
         y: boardSize.height / 2 - diameter / 2,
     }), [boardSize.width, boardSize.height, diameter]);
 
-    const [position, setPosition] = useState(initialPosition); // [1
+    const [position, setPosition] = useState(initialPosition);
     const velocityRef = useRef(getRandomVelocity(boardSize, ballXVelocityVariable));
     const positionRef = useRef(position);
-    const animationFrameRef = useRef();
+    const animationFrameRef = useRef<number>();
 
     const updatePosition = useCallback(() => {
         if (gameState.isPaused) {
             return;
         }
 
-        let newPos = {
+        const newPos = {
             x: positionRef.current.x + velocityRef.current.x,
             y: positionRef.current.y + velocityRef.current.y
         };
 
-        if (newPos.y <= 0 + diameter || newPos.y >= boardSize.height - diameter) {
+        if (newPos.y <= 0 || newPos.y + diameter >= boardSize.height) {
             velocityRef.current.y *= -1;
-            newPos.y = positionRef.current.y + velocityRef.current.y;
+            newPos.y = newPos.y <= 0 ? 0 : boardSize.height - diameter;
         }
 
-        if (newPos.x <= 0 || newPos.x >= boardSize.width) {
+        if (newPos.x <= 0 || newPos.x + diameter >= boardSize.width) {
             setGameState((prevState) => {
                 const updatedScore = {
                     ...prevState.score,
-                    player1: newPos.x >= boardSize.width - diameter ? prevState.score.player1 + 1 : prevState.score.player1,
-                    player2: newPos.x <= 0 + diameter ? prevState.score.player2 + 1 : prevState.score.player2,
+                    player1: newPos.x + diameter >= boardSize.width ? prevState.score.player1 + 1 : prevState.score.player1,
+                    player2: newPos.x <= 0 ? prevState.score.player2 + 1 : prevState.score.player2,
                 };
 
                 const winner = updatedScore.player1 === 10 ? 1 : updatedScore.player2 === 10 ? 2 : null;
@@ -108,13 +125,13 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
         }
 
         animationFrameRef.current = requestAnimationFrame(updatePosition);
-    }, [boardSize, diameter, gameState, setGameState, initialPosition, ballXVelocityVariable, setPosition]);
+    }, [boardSize, diameter, gameState, setGameState, initialPosition, ballXVelocityVariable]);
 
     useEffect(() => {
         positionRef.current = initialPosition;
         setPosition(initialPosition);
         velocityRef.current = getRandomVelocity(boardSize, ballXVelocityVariable);
-    }, [boardSize, initialPosition, ballXVelocityVariable, setPosition]);
+    }, [boardSize, initialPosition, ballXVelocityVariable]);
 
     useEffect(() => {
         if (!gameState.isPaused) {
@@ -122,19 +139,21 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
         }
 
         return () => {
-            cancelAnimationFrame(animationFrameRef.current);
+            cancelAnimationFrame(animationFrameRef.current!);
         };
     }, [updatePosition, gameState.isPaused]);
 
     useEffect(() => {
         paddles.forEach((paddle, index) => {
-            let newPos = {
+            const newPos = {
                 x: positionRef.current.x + velocityRef.current.x,
                 y: positionRef.current.y + velocityRef.current.y
             };
 
-            if (checkPaddleCollision(paddle, newPos, diameter, index === 0 ? 1 : -1)) {
-                velocityRef.current.x = -velocityRef.current.x;
+            if (checkPaddleCollision(paddle, newPos, diameter, index)) {
+                velocityRef.current.x *= -1;
+                setPosition(newPos);
+                positionRef.current = newPos;
             }
         });
     }, [paddles, diameter]);
@@ -144,5 +163,3 @@ const useBall = (boardSize, paddles, gameState, setGameState) => {
         diameter
     };
 };
-
-export default useBall;

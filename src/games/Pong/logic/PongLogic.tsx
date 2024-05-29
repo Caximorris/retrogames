@@ -1,4 +1,6 @@
-function initializeGame() {
+import {GameState} from "../model/pong-model";
+
+function initializeGame(): GameState {
     return {
         score: {
             player1: 0,
@@ -7,8 +9,8 @@ function initializeGame() {
         },
         hasStarted: false,
         isPaused: true,
-        dificulty: null,
-        AIplayer: null
+        difficulty: null,
+        gameMode: null
     }
 }
 

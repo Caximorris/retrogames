@@ -1,11 +1,22 @@
-import { useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import {useRef, useEffect, FC, Dispatch, SetStateAction} from 'react';
+import {Paddle as PaddleType} from "../model/pong-model";
 import Paddle from './Paddle';
 import Ball from './Ball';
-import useBall from '../logic/useBall';
+import {GameState} from "../model/pong-model";
+import {useBall} from "../logic/useBall";
 
-const Board = ({ gameState, setGameState, playerOne, playerTwo, boardSize, setBoardSize, onBallPositionChange }) => {
-    const boardRef = useRef();
+type BoardProps = {
+    gameState: GameState;
+    setGameState: Dispatch<SetStateAction<GameState>>;
+    playerOne: PaddleType;
+    playerTwo: PaddleType;
+    boardSize: {width: number, height: number};
+    setBoardSize: (boardSize: {width: number, height: number}) => void;
+    onBallPositionChange: (position: {x: number, y: number}) => void;
+};
+
+const Board: FC<BoardProps> = ({ gameState, setGameState, playerOne, playerTwo, boardSize, setBoardSize, onBallPositionChange }) => {
+    const boardRef = useRef<HTMLDivElement | null>(null);
     const ball = useBall(boardSize, [playerOne, playerTwo], gameState, setGameState);
 
     useEffect(() => {
@@ -15,7 +26,7 @@ const Board = ({ gameState, setGameState, playerOne, playerTwo, boardSize, setBo
     useEffect(() => {
         const handleResize = () => {
             const board = boardRef.current;
-            const boardRect = board.getBoundingClientRect();
+            const boardRect = board!.getBoundingClientRect();
 
             setBoardSize({
                 width: boardRect.width,
@@ -39,16 +50,6 @@ const Board = ({ gameState, setGameState, playerOne, playerTwo, boardSize, setBo
             <Ball {...ball} />
         </div>
     );
-};
-
-Board.propTypes = {
-    gameState: PropTypes.object.isRequired,
-    setGameState: PropTypes.func.isRequired,
-    playerOne: PropTypes.object.isRequired,
-    playerTwo: PropTypes.object.isRequired,
-    boardSize: PropTypes.object.isRequired,
-    setBoardSize: PropTypes.func.isRequired,
-    onBallPositionChange: PropTypes.func.isRequired,
 };
 
 export default Board;
