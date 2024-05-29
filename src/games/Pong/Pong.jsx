@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import Board from './components/Board';
+import BoardContainer from './components/BoardContainer';
 import GameInfo from './components/GameInfo';
 import { initializeGame } from './logic/PongLogic';
 import ResetBt from '../../components/ResetBt';
@@ -19,7 +19,7 @@ const Pong = () => {
   return (
     <div className="pong-game">
       <GameInfo score={gameState.score} />
-      <Board gameState={gameState} setGameState={setGameState} />
+      <BoardContainer gameState={gameState} setGameState={setGameState} />
       <PausePong gameState={gameState} setGameState={setGameState} />
       <ResetBt reset={handleReset} />
     </div>
