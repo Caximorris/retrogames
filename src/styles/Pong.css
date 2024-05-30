@@ -1,5 +1,10 @@
-.paused-board,
-.pong-board {
+:root {
+    --font-scale-large: 2.5vw; /* Default scale for larger screens */
+    --h4-font-scale-large: 1.5vw; /* Default scale for h4 on larger screens */
+  }
+  
+  .paused-board,
+  .pong-board {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
@@ -7,18 +12,19 @@
     width: 90vw;
     max-width: 1200px;
     height: 0;
+    max-height: 90vh;
     padding-top: 45%;
     margin: 0 auto;
     margin-bottom: 20px;
     background-color: black;
     border: 2px solid rgb(65, 62, 62);
-}
-
-.pong-board {
+  }
+  
+  .pong-board {
     background-color: black;
-}
-
-.paused-pong-container {
+  }
+  
+  .paused-pong-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -31,40 +37,51 @@
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     z-index: 1;
-}
-
-.paused-pong {
+  }
+  
+  .paused-pong {
     text-align: center;
     margin: 0.5rem;
-}
-
-.paused-pong h1 {
-    font-size: 2.5rem;
+  }
+  
+  .paused-pong h1 {
+    font-size: var(--font-scale-large);
     margin-bottom: 1rem;
-}
-
-.paused-pong h4 {
-    font-size: 1.5rem;
+  }
+  
+  .paused-pong h4 {
+    font-size: var(--h4-font-scale-large);
     margin: 0.5rem 0;
-}
-
-.button-container {
+  }
+  
+  .button-container {
     display: flex;
     justify-content: center;
     gap: 1rem;
-}
-
-.pong-net {
+  }
+  
+  .pong-net {
     position: absolute;
     top: 0;
     left: 50%;
     width: 2px;
     height: 100%;
     background: repeating-linear-gradient(
-        to bottom,
-        white,
-        white 10px,
-        transparent 10px,
-        transparent 20px
+      to bottom,
+      white,
+      white 10px,
+      transparent 10px,
+      transparent 20px
     );
-}
+  }
+  
+  /* Media Queries */
+  @media (max-width: 600px) {
+    .paused-pong h1 {
+      font-size: 5vw !important; /* Override any other styles */
+    }
+  
+    .paused-pong h4 {
+      font-size: 3vw !important; /* Override any other styles */
+    }
+  }

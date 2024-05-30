@@ -11,11 +11,13 @@ function App() {
     <Router>
       <div className="App">
         <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/tic-tac-toe" element={<TicTacToe />} />
-          <Route path="/pong" element={<Pong />} />
-        </Routes>
+        <div className="content">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/tic-tac-toe" element={<TicTacToe />} />
+            <Route path="/pong" element={<Pong />} />
+          </Routes>
+        </div>
         <Footer />
       </div>
     </Router>
