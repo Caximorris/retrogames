@@ -36,9 +36,9 @@ const BoardContainer: FC<BoardContainerProps> = ({ gameState, setGameState }) =>
 
     if (gameState.isPaused) {
         return (
-            <div className="paused-board">
-                <div className="paused-pong-container">
-                    <h1 className="paused-pong">Resume</h1>
+            <div className="paused-snake-board">
+                <div className="paused-snake-container">
+                    <h1 className="paused-snake">Resume</h1>
                 </div>
             </div>
         );
