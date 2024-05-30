@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { GameState, Paddle } from "../model/pong-model";
 
-const usePaddle = (boardSize, upKey, downKey, playerOne, gameState) => {
+const usePaddle = (boardSize: { width: number, height: number }, upKey: string, downKey: string, playerOne: boolean, gameState: GameState): {
+    paddle: Paddle
+} => {
     let paddleHeightVariable = 0.15;
     let paddleWidthVariable = 0.01;
-    switch (gameState.dificulty) {
+    switch (gameState.difficulty) {
         case 1:
             paddleHeightVariable = 0.2;
             paddleWidthVariable = 0.015;
@@ -31,9 +34,9 @@ const usePaddle = (boardSize, upKey, downKey, playerOne, gameState) => {
     const [position, setPosition] = useState(initialPosition);
     const positionRef = useRef(position);
     const boardSizeRef = useRef(boardSize);
-    const animationFrameRef = useRef();
+    const animationFrameRef = useRef<number>();
 
-    const getNextPaddlePosition = useCallback((currentPosition, isGoingUp) => {
+    const getNextPaddlePosition = useCallback((currentPosition: number, isGoingUp: boolean) => {
         const adjustmentSize = Math.round(boardSize.height * 0.01);
         const adjustment = isGoingUp ? -adjustmentSize : adjustmentSize;
         const newPosition = currentPosition + adjustment;
@@ -41,9 +44,9 @@ const usePaddle = (boardSize, upKey, downKey, playerOne, gameState) => {
     }, [boardSize.height, size.height]);
 
     useEffect(() => {
-        const keyState = {};
+        const keyState: { [key: string]: boolean } = {};
 
-        const handleKeyDown = (e) => {
+        const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === upKey || e.key === downKey) {
                 e.preventDefault();
                 if (!gameState.isPaused && gameState.hasStarted) {
@@ -52,7 +55,7 @@ const usePaddle = (boardSize, upKey, downKey, playerOne, gameState) => {
             }
         };
 
-        const handleKeyUp = (e) => {
+        const handleKeyUp = (e: KeyboardEvent) => {
             if (e.key === upKey || e.key === downKey) {
                 e.preventDefault();
                 if (!gameState.isPaused && gameState.hasStarted) {
@@ -66,6 +69,7 @@ const usePaddle = (boardSize, upKey, downKey, playerOne, gameState) => {
 
         const gameLoop = () => {
             let nextPosition = positionRef.current;
+
             if (gameState.hasStarted) {
                 if (keyState[upKey]) {
                     nextPosition = getNextPaddlePosition(nextPosition, true);
@@ -86,9 +90,9 @@ const usePaddle = (boardSize, upKey, downKey, playerOne, gameState) => {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
-            cancelAnimationFrame(animationFrameRef.current);
+            cancelAnimationFrame(animationFrameRef.current as number);
         };
-    }, [upKey, downKey, size.height, getNextPaddlePosition, gameState.hasStarted, gameState.isPaused]);
+    }, [upKey, downKey, getNextPaddlePosition, gameState]);
 
     useEffect(() => {
         if (!gameState.hasStarted) {
@@ -96,7 +100,7 @@ const usePaddle = (boardSize, upKey, downKey, playerOne, gameState) => {
             positionRef.current = initialPosition;
         }
     }, [gameState.hasStarted, initialPosition, setPosition]);
-    
+
     useEffect(() => {
         if (boardSizeRef.current.height !== boardSize.height) {
             const adjustedPosition = Math.round(position / boardSizeRef.current.height * boardSize.height);
@@ -108,13 +112,14 @@ const usePaddle = (boardSize, upKey, downKey, playerOne, gameState) => {
 
     const leftPosition = Math.round(boardSize.width * 0.05);
     const rightPosition = boardSize.width - size.width - leftPosition;
-
-    return {
+    const paddle = {
         position: {
             x: playerOne ? leftPosition : rightPosition,
             y: position,
         }, size
     };
+
+    return {paddle};
 };
 
 export default usePaddle;

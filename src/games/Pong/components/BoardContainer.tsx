@@ -1,13 +1,18 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import {Dispatch, FC, SetStateAction, useState} from 'react';
 import usePaddle from '../logic/usePaddle';
 import useAIPaddle from '../logic/useAIPaddle';
-import Board from './Board';
+import {GameState} from "../model/pong-model";
+import Board from "./Board";
 
-const BoardContainer = ({ gameState, setGameState }) => {
+type BoardContainerProps = {
+    gameState: GameState
+    setGameState: Dispatch<SetStateAction<GameState>>
+}
+
+const BoardContainer: FC<BoardContainerProps> = ({ gameState, setGameState }) => {
     const [boardSize, setBoardSize] = useState({ width: 800, height: 400 }); // Default size or state
-    const playerOne = usePaddle(boardSize, 'w', 's', true, gameState);
-    const playerTwo = usePaddle(boardSize, 'ArrowUp', 'ArrowDown', false, gameState);
+    const {paddle: playerOne} = usePaddle(boardSize, 'w', 's', true, gameState);
+    const {paddle: playerTwo} = usePaddle(boardSize, 'ArrowUp', 'ArrowDown', false, gameState);
     const { paddle: AIPaddle, handleBallPositionChange } = useAIPaddle(boardSize, gameState);
 
     if (gameState.score.winner) {
@@ -22,17 +27,17 @@ const BoardContainer = ({ gameState, setGameState }) => {
         );
     }
 
-    if (!gameState.AIPlayer) {
+    if (!gameState.gameMode) {
         return (
             <div className="paused-board">
                 <div className="paused-pong-container">
                     <h1 className="paused-pong">Pong</h1>
                     <div className="button-container">
-                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, AIPlayer: 1 })}>
-                            vs AI
+                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, gameMode: "singlePlayer" })}>
+                            CPU vs Player
                         </button>
-                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, AIPlayer: 2 })}>
-                            Local
+                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, gameMode: "multiPlayer" })}>
+                            Player vs Player
                         </button>
                     </div>
                 </div>
@@ -45,20 +50,20 @@ const BoardContainer = ({ gameState, setGameState }) => {
             <div className="paused-board">
                 <div className="paused-pong-container">
                     <h1 className="paused-pong">
-                        {gameState.AIPlayer === 1 ? 'Pong Singleplayer' : 'Pong Multiplayer'}
+                        {gameState.gameMode === "singlePlayer" ? 'Pong Singleplayer' : 'Pong Multiplayer'}
                     </h1>
                     <h4 className="paused-pong">
-                        {gameState.AIPlayer === 2 ? 'Use W and S to move left player' : null}
+                        {gameState.gameMode === "multiPlayer" ? 'Use W and S to move left player' : null}
                     </h4>
                     <h4 className="paused-pong">Use the arrow keys to move right player</h4>
                     <div className="button-container">
-                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, dificulty: 1 })}>
+                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, difficulty: 1 })}>
                             Easy
                         </button>
-                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, dificulty: 2 })}>
+                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, difficulty: 2 })}>
                             Medium
                         </button>
-                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, dificulty: 3 })}>
+                        <button className="paused-pong" onClick={() => setGameState({ ...gameState, difficulty: 3 })}>
                             Hard
                         </button>
                     </div>
@@ -81,18 +86,13 @@ const BoardContainer = ({ gameState, setGameState }) => {
         <Board
             gameState={gameState}
             setGameState={setGameState}
-            playerOne={gameState.AIPlayer === 1 ? AIPaddle : playerOne}
+            playerOne={gameState.gameMode === "singlePlayer" ? AIPaddle : playerOne}
             playerTwo={playerTwo}
             boardSize={boardSize}
             setBoardSize={setBoardSize}
             onBallPositionChange={handleBallPositionChange}
         />
     );
-};
-
-BoardContainer.propTypes = {
-    gameState: PropTypes.object.isRequired,
-    setGameState: PropTypes.func.isRequired
 };
 
 export default BoardContainer;
