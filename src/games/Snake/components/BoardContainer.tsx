@@ -12,7 +12,7 @@ const BoardContainer: FC<BoardContainerProps> = ({ gameState, setGameState }) =>
 
     if (!gameState.hasStarted) {
         return (
-            <div className="paused-board">
+            <div className="paused-snake-board">
                 <div className="paused-snake-container">
                     <h1 className="paused-snake">
                         Snake

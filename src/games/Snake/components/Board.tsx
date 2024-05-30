@@ -2,8 +2,8 @@ import {useRef, useEffect, FC, Dispatch, SetStateAction} from 'react';
 import {GameState} from "../model/snake-model";
 import SnakePlayer from "./SnakePlayer";
 import Food from "./Food";
-import {useSnake} from "../logic/useSnake";
-import {useFood} from "../logic/useFood";
+import useSnake from "../logic/useSnake";
+import useFood from "../logic/useFood";
 
 type BoardProps = {
     gameState: GameState;
@@ -14,8 +14,9 @@ type BoardProps = {
 
 const Board: FC<BoardProps> = ({ gameState, setGameState, boardSize, setBoardSize }) => {
     const boardRef = useRef<HTMLDivElement | null>(null);
-    const snake = useSnake(boardSize, gameState, setGameState);
-    const food = useFood(boardSize, gameState, setGameState);
+    const snake = useSnake();
+    const food = useFood();
+    console.log(snake);
 
     useEffect(() => {
         const handleResize = () => {
@@ -37,9 +38,8 @@ const Board: FC<BoardProps> = ({ gameState, setGameState, boardSize, setBoardSiz
     }, [setBoardSize]);
 
     return (
-        <div ref={boardRef} className="pong-board">
-            <div className="pong-net" />
-            <SnakePlayer {...snake} />
+        <div ref={boardRef} className="snake-board">
+            {/* <SnakePlayer {...snake} /> */}
             <Food {...food} />
         </div>
     );

@@ -1,25 +1,19 @@
 import {FC} from "react";
 
-type BallProps = {
-    position: { x: number, y: number },
-    diameter: number
+type FoodProps = {
+    food: { x: number, y: number }
 }
 
-const Ball: FC<BallProps> = ({position, diameter}) => {
+const Food: FC<FoodProps> = ({food}) => {
     return (
         <div
             className="food"
             style={{
-                left: `${position.x}px`,
-                top: `${position.y}px`,
-                position: 'absolute',
-                width: `${diameter}px`,
-                height: `${diameter}px`,
-                borderRadius: '50%',
-                backgroundColor: 'white'
+                left: `${food.x}px`,
+                top: `${food.y}px`,
             }}
         />
     );
 };
 
-export default Ball;
+export default Food;

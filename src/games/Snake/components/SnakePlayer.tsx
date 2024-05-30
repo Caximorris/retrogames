@@ -1,31 +1,21 @@
 import {FC} from "react";
 
 type SnakePlayerProps = {
-    position: {
-        x: number;
-        y: number;
-    };
-    size: {
-        width: number;
-        height: number;
-    };
+    snake: [{ x: number, y: number }]
 }
 
-const SnakePlayer: FC<SnakePlayerProps> = ({position, size}) => {
-
-    return (
-        <div
-            className="snake-player"
-            style={{
-                top: `${position.y}px`,
-                left: `${position.x}px`,
-                position: 'absolute',
-                width: `${size.width}px`,
-                height: `${size.height}px`,
-                backgroundColor: 'white',
-            }}
-        />
-    );
-}
+const SnakePlayer: FC<SnakePlayerProps> = ({ snake }) => {
+        return (
+            <>
+                {snake.map((segment, index) => (
+                    <div
+                        key={index}
+                        className="snake-segment"
+                        style={{ left: `${segment.x * 20}px`, top: `${segment.y * 20}px` }}
+                    ></div>
+                ))}
+            </>
+        );
+    };
 
 export default SnakePlayer;
