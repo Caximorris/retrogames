@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
-const useFood = () => {
-    const [food, setFood] = useState({ x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 20) });
+const useFood = (size: number) => {
+    const [food, setFood] = useState({ col: Math.floor(Math.random() * size), row: Math.floor(Math.random() * size) });
 
     const generateFood = () => {
-        setFood({ x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 20) });
+        setFood({ col: Math.floor(Math.random() * size), row: Math.floor(Math.random() * size) });
     };
 
     return { food, generateFood };

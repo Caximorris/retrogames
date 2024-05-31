@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useState } from 'react';
+import { Dispatch, FC, SetStateAction } from 'react';
 import { GameState } from "../model/snake-model";
 import Board from "./Board";
 
@@ -8,7 +8,15 @@ type BoardContainerProps = {
 }
 
 const BoardContainer: FC<BoardContainerProps> = ({ gameState, setGameState }) => {
-    const [boardSize, setBoardSize] = useState({ width: 600, height: 600 }); // Default size or state
+    let gridLength: number;
+
+    if (gameState.difficulty === 0) {
+        gridLength = 10
+    } else if (gameState.difficulty === 1) {
+        gridLength = 15
+    } else {
+        gridLength = 20
+    }
 
     if (!gameState.hasStarted) {
         return (
@@ -48,8 +56,7 @@ const BoardContainer: FC<BoardContainerProps> = ({ gameState, setGameState }) =>
         <Board
             gameState={gameState}
             setGameState={setGameState}
-            boardSize={boardSize}
-            setBoardSize={setBoardSize}
+            size={gridLength}
         />
     );
 };
