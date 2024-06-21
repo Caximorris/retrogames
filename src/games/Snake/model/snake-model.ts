@@ -4,3 +4,8 @@ export type GameState = {
     isPaused: boolean;
     difficulty: number | null;
   }
+
+export type SetSnake = {
+    col: number;
+    row: number;
+}

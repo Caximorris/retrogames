@@ -1,61 +1,73 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, Dispatch, SetStateAction } from 'react';
+import { GameState } from "../model/snake-model";
+import useKeyPress from "./useKeyPress";
+import useInterval from './useInterval';
+import { SetSnake } from '../model/snake-model';
+import { initializeGame } from './snakeLogic';
 
-const BOARD_SIZE = 20; // 20x20 grid
+const useSnake = (size: number, gameState: GameState, setGameState: Dispatch<SetStateAction<GameState>>) => {
+    const [snake, setSnake] = useState<SetSnake[]>([{ col: size / 2, row: size / 2 }]);
+    const [direction, setDirection] = useState('RIGHT');
+    const generateFood = useCallback(() => {
+        const randomPosition = () => Math.floor(Math.random() * size);
+        return { col: randomPosition(), row: randomPosition() };
+    }, [size]);
+    const [food, setFood] = useState(generateFood());
 
-const useSnake = () => {
-    const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
-    const [direction, setDirection] = useState({ x: 0, y: 1 });
+    useKeyPress((key: string) => {
+        if (key === 'ArrowUp' && direction !== 'DOWN') setDirection('UP');
+        if (key === 'ArrowDown' && direction !== 'UP') setDirection('DOWN');
+        if (key === 'ArrowLeft' && direction !== 'RIGHT') setDirection('LEFT');
+        if (key === 'ArrowRight' && direction !== 'LEFT') setDirection('RIGHT');
+    });
+
+    useInterval(() => {
+        if (!gameState.isPaused) {
+            moveSnake();
+        }
+    }, 5000);
+
+    const isCollision = useCallback((head: SetSnake, snake: SetSnake[]): boolean => {
+        if (
+            head.col < 0 || head.col >= size ||
+            head.row < 0 || head.row >= size
+        ) {
+            return true;
+        }
+        for (const segment of snake) {
+            if (head.col === segment.col && head.row === segment.row) {
+                return true;
+            }
+        }
+        return false;
+    }, [size]);
+
 
     const moveSnake = useCallback(() => {
-        setSnake(prevSnake => {
-            const newSnake = [...prevSnake];
-            const head = newSnake[0];
-            const newHead = { x: head.x + direction.x, y: head.y + direction.y };
+        const newSnake = [...snake];
+        const head = { ...newSnake[0] };
 
-            // Check for wall collisions
-            if (newHead.x >= BOARD_SIZE) newHead.x = 0;
-            if (newHead.x < 0) newHead.x = BOARD_SIZE - 1;
-            if (newHead.y >= BOARD_SIZE) newHead.y = 0;
-            if (newHead.y < 0) newHead.y = BOARD_SIZE - 1;
+        if (direction === 'UP') head.row -= 1;
+        if (direction === 'DOWN') head.row += 1;
+        if (direction === 'LEFT') head.col -= 1;
+        if (direction === 'RIGHT') head.col += 1;
 
-            newSnake.unshift(newHead);
-            newSnake.pop(); // Remove the last element
-            return newSnake;
-        });
-    }, [direction]);
-
-    const handleKeyDown = useCallback((event: KeyboardEvent) => {
-        switch (event.key) {
-            case 'ArrowUp':
-                if (direction.y === 0) setDirection({ x: 0, y: -1 });
-                break;
-            case 'ArrowDown':
-                if (direction.y === 0) setDirection({ x: 0, y: 1 });
-                break;
-            case 'ArrowLeft':
-                if (direction.x === 0) setDirection({ x: -1, y: 0 });
-                break;
-            case 'ArrowRight':
-                if (direction.x === 0) setDirection({ x: 1, y: 0 });
-                break;
-            default:
-                break;
+        newSnake.unshift(head);
+        if (head.col === food.col && head.row === food.row) {
+            setFood(generateFood());
+            setGameState({ ...gameState, score: gameState.score + 1 });
+        } else {
+            newSnake.pop();
         }
-    }, [direction]);
 
-    useEffect(() => {
-        const interval = setInterval(moveSnake, 200); // Move snake every 200ms
-        return () => clearInterval(interval);
-    }, [moveSnake]);
+        if (isCollision(head, newSnake)) {
+            initializeGame();
+        } else {
+            setSnake(newSnake);
+        }
+    }, [direction, snake, food, setFood, setSnake, generateFood, isCollision, gameState, setGameState]);
 
-    useEffect(() => {
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [handleKeyDown]);
-
-    return { snake };
+    return { snake, food };
 };
 
 export default useSnake;

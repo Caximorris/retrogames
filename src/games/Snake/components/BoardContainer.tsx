@@ -13,9 +13,9 @@ const BoardContainer: FC<BoardContainerProps> = ({ gameState, setGameState }) =>
     if (gameState.difficulty === 0) {
         gridLength = 10
     } else if (gameState.difficulty === 1) {
-        gridLength = 15
+        gridLength = 16
     } else {
-        gridLength = 20
+        gridLength = 22
     }
 
     if (!gameState.hasStarted) {
